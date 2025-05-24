@@ -1,3 +1,4 @@
+# BLA BLE BLA RED O
 import streamlit as st
 from PIL import Image, ImageEnhance, ImageOps
 import matplotlib.pyplot as plt
