@@ -42,15 +42,13 @@ def save_response_content(response, destination, chunk_size=32768):
 
 
 @st.cache_resource
-def load_trained_model():
-    model_path = "xception_model.h5"
+def load_trained_model(model_name):
+    model_info = MODEL_OPTIONS[model_name]
+    model_path = model_info["filename"]
+
     if not os.path.exists(model_path):
-        with st.spinner("Downloading model from Google Drive..."):
-            file_id = (
-                "1Fz2RuXvM54Ym3QCanvMySKME0Y4-GgEb"  # Replace with your actual file ID
-            )
-            download_from_google_drive(file_id, model_path)
-            st.success("Model downloaded.")
+        with st.spinner(f"Downloading {model_name} model..."):
+            download_from_google_drive(model_info["file_id"], model_path)
     return load_model(model_path)
 
 
@@ -59,6 +57,30 @@ st.set_page_config(layout="wide", page_title="Image Adjuster")
 st.title("Image Augmentation & Analysis App")
 
 st.sidebar.subheader("Image Source")
+
+MODEL_OPTIONS = {
+    "Xception": {
+        "file_id": "1Fz2RuXvM54Ym3QCanvMySKME0Y4-GgEb",
+        "filename": "xception_model.h5",
+    },
+    # "Custom CNN": {
+    #     "file_id": "15g2u9wFJKLY2cvXkUWtqCSRhl3ekN6Eo",
+    #     # https://drive.google.com/file/d/15g2u9wFJKLY2cvXkUWtqCSRhl3ekN6Eo/view?usp=sharing
+    #     "filename": "custom_cnn_model.h5",
+    # },
+    "RandomForest": {
+        "file_id": "1Fz2RuXvM54Ym3QCanvMySKME0Y4-GgEb",
+        # https://drive.google.com/file/d/1Fz2RuXvM54Ym3QCanvMySKME0Y4-GgEb/view?usp=sharing
+        "filename": "random_forest_model.h5",
+    },
+}
+
+st.sidebar.subheader("Model Selection")
+selected_model_name = st.sidebar.selectbox(
+    "Choose a model:", list(MODEL_OPTIONS.keys())
+)
+
+model = load_trained_model(selected_model_name)
 
 image_source = st.sidebar.radio("Choose image source:", ["Example", "Upload"])
 
@@ -87,9 +109,6 @@ if image_source == "Upload" and uploaded_file:
 elif image_source == "Example" and selected_example:
     image_path = example_options[selected_example]
     image = Image.open(image_path).convert("RGB")
-
-
-model = load_trained_model()
 
 
 def calculate_image_stats(image):
@@ -158,8 +177,8 @@ def auto_adjust_image(
     image,
     feature="All",
     brightness_range=(153, 178),
-    saturation_range=(52, 76.5),
-    contrast_range=(28.4, 43),
+    saturation_range=(51, 76),
+    contrast_range=(26, 38),
 ):
     brightness, saturation, contrast = calculate_image_stats(image)
 
@@ -259,7 +278,7 @@ if image:
         submitted = st.form_submit_button("Predict", use_container_width=True)
 
     with prediction_placeholder:
-        st.subheader("Model Predictions")
+        st.subheader(f"{selected_model_name} - Model Predictions")
         pred_cols = st.columns(3)
 
         if submitted:
