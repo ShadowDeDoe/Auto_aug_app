@@ -56,7 +56,21 @@ st.set_page_config(layout="wide", page_title="Image Adjuster")
 
 st.title("Image Augmentation & Analysis App")
 
-st.sidebar.subheader("Image Source")
+st.sidebar.subheader("IDEA")
+st.sidebar.markdown(
+    """
+**Problem**\n
+Can adjusting image inputs to match training conditions improve prediction accuracy?
+
+**Description**
+* The left image is untouched 
+* The center image is controlled by you!
+* The right image is automatically pushed into the relevant range
+    (brightness/saturation/contrast)
+
+"""
+)
+
 
 MODEL_OPTIONS = {
     "Xception": {
