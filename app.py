@@ -184,7 +184,7 @@ if image:
     augmented = ImageEnhance.Contrast(augmented).enhance(contrast_factor)
     augmented = ImageEnhance.Color(augmented).enhance(saturation_factor)
 
-    adjusted = auto_adjust_image(augmented, feature=feature_choice)
+    adjusted = auto_adjust_image(image, feature=feature_choice)
 
     with col2:
         st.image(augmented, caption="Augmented Image", use_container_width=True)
