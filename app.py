@@ -213,6 +213,7 @@ if image:
     feature_choice = st.sidebar.selectbox(
         "Select a feature to adjust (for both manual and auto adjust):",
         ["Brightness", "Saturation", "Contrast", "All"],
+        key="selected_metric",
     )
 
     # Default factors
@@ -460,9 +461,19 @@ if image:
             0.265000,
         ],
     }
-    if feature_choice in ["Brightness", "All"]:
-        plot_metric_chart("Brightness", brightness_data)
-    elif feature_choice in ["Saturation", "All"]:
-        plot_metric_chart("Saturation", saturation_data)
-    elif feature_choice in ["Contrast", "All"]:
-        plot_metric_chart("Contrast", contrast_data)
+    # Dropdown menu with state tracking
+
+    # Track previously rendered metric
+    if "last_metric" not in st.session_state:
+        st.session_state.last_metric = None
+
+    # Only update plot if user changed the dropdown
+    if feature_choice != st.session_state.last_metric:
+        st.session_state.last_metric = feature_choice  # Update memory
+
+        if feature_choice == "Brightness":
+            plot_metric_chart("Brightness", brightness_data)
+        elif feature_choice == "Saturation":
+            plot_metric_chart("Saturation", saturation_data)
+        elif feature_choice == "Contrast":
+            plot_metric_chart("Contrast", contrast_data)
