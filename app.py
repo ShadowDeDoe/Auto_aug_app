@@ -170,13 +170,13 @@ if image:
 
     # Show slider based on selection
     if feature_choice in ("Brightness", "All"):
-        brightness_factor = st.sidebar.slider("Brightness", 0.01, 2.0, 1.0)
+        brightness_factor = st.sidebar.slider("Brightness", 0.0, 3.0, 1.0)
 
     if feature_choice in ("Saturation", "All"):
-        saturation_factor = st.sidebar.slider("Saturation", 0.01, 2.0, 1.0)
+        saturation_factor = st.sidebar.slider("Saturation", 0.0, 3.0, 1.0)
 
     if feature_choice in ("Contrast", "All"):
-        contrast_factor = st.sidebar.slider("Contrast", 0.01, 2.0, 1.0)
+        contrast_factor = st.sidebar.slider("Contrast", 0.0, 3.0, 1.0)
 
     # Apply augmentations
     augmented = image
@@ -208,7 +208,7 @@ if image:
 
     st.markdown("---")
     # DOESN"T LOAD THE ICON IN MY EDITOR BUT ITS THERE TRUST!"
-    st.markdown("### 🔍 Run Prediction")
+    st.markdown("### Run Prediction")
 
     with st.form("predict_form"):
         submitted = st.form_submit_button("Predict", use_container_width=True)
@@ -216,7 +216,7 @@ if image:
         if submitted:
             try:
                 if model:
-                    st.subheader("🧠 Model Predictions")
+                    st.subheader("Model Predictions")
 
                     # Preprocess function
                     def preprocess(img):
@@ -260,28 +260,6 @@ if image:
                 st.error("Something went wrong during prediction.")
                 st.text(str(e))
 
-    accuracy_data = {"Original": 0.85, "Augmented": 0.88, "Auto Adjusted": 0.90}
-
-    st.markdown("---")
-    st.markdown("### 📈 Model Accuracy Comparison")
-
-    fig, ax = plt.subplots()
-    labels = list(accuracy_data.keys())
-    values = list(accuracy_data.values())
-    bars = ax.bar(labels, values)
-    ax.set_ylim(0, 1)
-    ax.set_ylabel("Accuracy")
-    ax.set_title("Prediction Accuracy per Image Variant")
-
-    for bar in bars:
-        height = bar.get_height()
-        ax.annotate(
-            f"{height:.2f}",
-            xy=(bar.get_x() + bar.get_width() / 2, height),
-            xytext=(0, 5),
-            textcoords="offset points",
-            ha="center",
-            va="bottom",
-        )
-
-    st.pyplot(fig)
+    accuracy_data_bright = {}
+    accuracy_data_contast = {}
+    accuracy_data_saturation = {}
