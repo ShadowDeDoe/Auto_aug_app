@@ -83,11 +83,11 @@ MODEL_OPTIONS = {
         # https://drive.google.com/file/d/1Epj1vPIFnj8_snHTmUvO6msHogRy737U/view?usp=sharing
         "filename": "custom_cnn_unified_model.h5",
     },
-    "RandomForest": {
-        "file_id": "15g2u9wFJKLY2cvXkUWtqCSRhl3ekN6Eo",
-        # https://drive.google.com/file/d/15g2u9wFJKLY2cvXkUWtqCSRhl3ekN6Eo/view?usp=sharing
-        "filename": "random_forest_model.h5",
-    },
+    # "RandomForest": {
+    #     "file_id": "15g2u9wFJKLY2cvXkUWtqCSRhl3ekN6Eo",
+    #     # https://drive.google.com/file/d/15g2u9wFJKLY2cvXkUWtqCSRhl3ekN6Eo/view?usp=sharing
+    #     "filename": "random_forest_model.h5",
+    # },
 }
 
 st.sidebar.subheader("Model Selection")
