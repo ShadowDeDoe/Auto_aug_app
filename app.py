@@ -75,16 +75,17 @@ Can adjusting image inputs to match training conditions improve prediction accur
 MODEL_OPTIONS = {
     "Xception": {
         "file_id": "1Fz2RuXvM54Ym3QCanvMySKME0Y4-GgEb",
+        # https://drive.google.com/file/d/1Fz2RuXvM54Ym3QCanvMySKME0Y4-GgEb/view?usp=sharing
         "filename": "xception_model.h5",
     },
-    # "Custom CNN": {
-    #     "file_id": "15g2u9wFJKLY2cvXkUWtqCSRhl3ekN6Eo",
-    #     # https://drive.google.com/file/d/15g2u9wFJKLY2cvXkUWtqCSRhl3ekN6Eo/view?usp=sharing
-    #     "filename": "custom_cnn_model.h5",
-    # },
+    "Custom CNN": {
+        "file_id": "1Epj1vPIFnj8_snHTmUvO6msHogRy737U",
+        # https://drive.google.com/file/d/1Epj1vPIFnj8_snHTmUvO6msHogRy737U/view?usp=sharing
+        "filename": "custom_cnn_unified_model.h5",
+    },
     "RandomForest": {
-        "file_id": "1Fz2RuXvM54Ym3QCanvMySKME0Y4-GgEb",
-        # https://drive.google.com/file/d/1Fz2RuXvM54Ym3QCanvMySKME0Y4-GgEb/view?usp=sharing
+        "file_id": "15g2u9wFJKLY2cvXkUWtqCSRhl3ekN6Eo",
+        # https://drive.google.com/file/d/15g2u9wFJKLY2cvXkUWtqCSRhl3ekN6Eo/view?usp=sharing
         "filename": "random_forest_model.h5",
     },
 }
