@@ -132,10 +132,8 @@ def plot_metric_chart(metric_name, data_dict):
         ax.plot(x_smooth, y_smooth, label=model, linewidth=2, color=colors[model])
         ax.scatter(x, y, color=colors[model], edgecolor="white", zorder=5, label=None)
 
-    # Draw the shaded region (no label here)
     ax.axvspan(best_start, best_end, color="purple", alpha=0.3, label=None)
 
-    # Manually add unified legend entry for best range
     best_patch = mpatches.Patch(
         color="purple", alpha=0.3, label=f"Best Range: {best_start}–{best_end}"
     )
@@ -144,7 +142,6 @@ def plot_metric_chart(metric_name, data_dict):
     labels.append(f"Best Range: {best_start}–{best_end}")
     ax.legend(handles, labels, fontsize=10)
 
-    # X-axis range
     ax.set_xlim(0, 127 if metric_name.lower() == "contrast" else 255)
     ax.set_xlabel(metric_name, fontsize=12, color="white")
     ax.set_ylabel("Accuracy", fontsize=12, color="white")
@@ -196,7 +193,6 @@ def auto_adjust_image(
 
 
 if image:
-    # Load and display image
     col1, col2, col3 = st.columns(3)
 
     with col1:
@@ -209,19 +205,16 @@ if image:
 
     st.sidebar.subheader("Augmentation Options")
 
-    # Dropdown menu to choose which feature to adjust
     feature_choice = st.sidebar.selectbox(
         "Select a feature to adjust (for both manual and auto adjust):",
         ["Brightness", "Saturation", "Contrast", "All"],
         key="selected_metric",
     )
 
-    # Default factors
     brightness_factor = 1.0
     contrast_factor = 1.0
     saturation_factor = 1.0
 
-    # Show slider based on selection
     if feature_choice in ("Brightness", "All"):
         brightness_factor = st.sidebar.slider("Brightness", 0.0, 3.0, 1.0)
 
@@ -246,7 +239,6 @@ if image:
         st.write(f"Saturation: {aug_sat:.2f}")
         st.write(f"Contrast: {aug_con:.2f}")
 
-    # Analyze both original and augmented image
     orig_bright, orig_sat, orig_con = calculate_image_stats(image)
     aug_bright, aug_sat, aug_con = calculate_image_stats(augmented)
     adj_bright, adj_sat, adj_con = calculate_image_stats(adjusted)
@@ -261,13 +253,18 @@ if image:
     st.markdown("---")
     st.markdown("### Run Prediction")
 
+    prediction_placeholder = st.container()
+
     with st.form("predict_form"):
         submitted = st.form_submit_button("Predict", use_container_width=True)
+
+    with prediction_placeholder:
+        st.subheader("Model Predictions")
+        pred_cols = st.columns(3)
 
         if submitted:
             try:
                 if model:
-                    st.subheader("Model Predictions")
 
                     def preprocess(img):
                         arr = np.array(img.resize((100, 100))) / 255.0
@@ -277,7 +274,6 @@ if image:
                     aug_input = preprocess(augmented)
                     adj_input = preprocess(adjusted)
 
-                    # Predictions
                     img_pred = model.predict(img_input)
                     aug_pred = model.predict(aug_input)
                     adj_pred = model.predict(adj_input)
@@ -293,72 +289,76 @@ if image:
                         3: "Prolif_Invasive_Tumor",
                     }
 
-                    pred_cols = st.columns(3)
+                    labels = [img_label, aug_label, adj_label]
                     for col, title, label in zip(
-                        pred_cols,
-                        ["Original", "Augmented", "Auto Adjusted"],
-                        [img_label, aug_label, adj_label],
+                        pred_cols, ["Original", "Augmented", "Auto Adjusted"], labels
                     ):
                         with col:
                             st.markdown(f"#### {title}")
                             st.success(f"**Prediction:** {index_to_label[label]}")
-
                 else:
                     st.warning("No model found.")
             except Exception as e:
                 st.error("Something went wrong during prediction.")
                 st.text(str(e))
+        else:
+            for col, title in zip(
+                pred_cols, ["Original", "Augmented", "Auto Adjusted"]
+            ):
+                with col:
+                    st.markdown(f"#### {title}")
+                    st.info("Awaiting prediction...")
 
-    brightness_data = {
-        "Range": [
-            "0–26",
-            "26–51",
-            "51–76",
-            "76–102",
-            "102–128",
-            "128–153",
-            "153–178",
-            "178–204",
-            "204–230",
-            "230–255",
-        ],
-        "Xception": [
-            0.299950,
-            0.329120,
-            0.423164,
-            0.489199,
-            0.520523,
-            0.541884,
-            0.544601,
-            0.530387,
-            0.436752,
-            0.343688,
-        ],
-        "Custom CNN": [
-            0.196294,
-            0.265914,
-            0.266787,
-            0.270927,
-            0.302661,
-            0.420729,
-            0.545070,
-            0.514601,
-            0.364530,
-            0.292796,
-        ],
-        "RandomForest": [
-            0.244867,
-            0.251016,
-            0.250563,
-            0.242574,
-            0.248985,
-            0.259347,
-            0.444601,
-            0.316496,
-            0.293590,
-            0.256444,
-        ],
-    }
+        brightness_data = {
+            "Range": [
+                "0–26",
+                "26–51",
+                "51–76",
+                "76–102",
+                "102–128",
+                "128–153",
+                "153–178",
+                "178–204",
+                "204–230",
+                "230–255",
+            ],
+            "Xception": [
+                0.299950,
+                0.329120,
+                0.423164,
+                0.489199,
+                0.520523,
+                0.541884,
+                0.544601,
+                0.530387,
+                0.436752,
+                0.343688,
+            ],
+            "Custom CNN": [
+                0.196294,
+                0.265914,
+                0.266787,
+                0.270927,
+                0.302661,
+                0.420729,
+                0.545070,
+                0.514601,
+                0.364530,
+                0.292796,
+            ],
+            "RandomForest": [
+                0.244867,
+                0.251016,
+                0.250563,
+                0.242574,
+                0.248985,
+                0.259347,
+                0.444601,
+                0.316496,
+                0.293590,
+                0.256444,
+            ],
+        }
 
     saturation_data = {
         "Range": [
@@ -461,19 +461,16 @@ if image:
             0.265000,
         ],
     }
-    # Dropdown menu with state tracking
 
-    # Track previously rendered metric
-    if "last_metric" not in st.session_state:
-        st.session_state.last_metric = None
+    if (
+        "last_metric" not in st.session_state
+        or feature_choice != st.session_state.last_metric
+    ):
+        st.session_state.last_metric = feature_choice
 
-    # Only update plot if user changed the dropdown
-    if feature_choice != st.session_state.last_metric:
-        st.session_state.last_metric = feature_choice  # Update memory
-
-        if feature_choice == "Brightness":
-            plot_metric_chart("Brightness", brightness_data)
-        elif feature_choice == "Saturation":
-            plot_metric_chart("Saturation", saturation_data)
-        elif feature_choice == "Contrast":
-            plot_metric_chart("Contrast", contrast_data)
+    if feature_choice in ["Brightness", "All"]:
+        plot_metric_chart("Brightness", brightness_data)
+    if feature_choice in ["Saturation", "All"]:
+        plot_metric_chart("Saturation", saturation_data)
+    if feature_choice in ["Contrast", "All"]:
+        plot_metric_chart("Contrast", contrast_data)
