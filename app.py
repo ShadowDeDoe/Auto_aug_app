@@ -10,6 +10,7 @@ from scipy.interpolate import PchipInterpolator
 import os
 import requests
 import matplotlib.patches as mpatches
+from joblib import load
 
 
 def download_from_google_drive(file_id, dest_path):
@@ -49,7 +50,11 @@ def load_trained_model(model_name):
     if not os.path.exists(model_path):
         with st.spinner(f"Downloading {model_name} model..."):
             download_from_google_drive(model_info["file_id"], model_path)
-    return load_model(model_path)
+
+    if model_path.endswith(".h5"):
+        return load_model(model_path)
+    elif model_path.endswith(".joblib"):
+        return load(model_path)
 
 
 st.set_page_config(layout="wide", page_title="Image Adjuster")
@@ -83,11 +88,10 @@ MODEL_OPTIONS = {
         # https://drive.google.com/file/d/1Epj1vPIFnj8_snHTmUvO6msHogRy737U/view?usp=sharing
         "filename": "custom_cnn_unified_model.h5",
     },
-    # "RandomForest": {
-    #     "file_id": "15g2u9wFJKLY2cvXkUWtqCSRhl3ekN6Eo",
-    #     # https://drive.google.com/file/d/15g2u9wFJKLY2cvXkUWtqCSRhl3ekN6Eo/view?usp=sharing
-    #     "filename": "random_forest_model.h5",
-    # },
+    "RandomForest": {
+        "file_id": "15g2u9wFJKLY2cvXkUWtqCSRhl3ekN6Eo",
+        "filename": "rf_model.joblib",
+    },
 }
 
 st.sidebar.subheader("Model Selection")
@@ -300,21 +304,25 @@ if image:
             try:
                 if model:
 
-                    def preprocess(img):
-                        arr = np.array(img.resize((100, 100))) / 255.0
-                        return np.expand_dims(arr, axis=0)
+                    def predict_image(model, model_name, img):
+                        if model_name == "RandomForest":
+                            image_np = np.array(img.resize((100, 100))) / 255.0
+                            input_data = [image_np.flatten()]
+                        else:
+                            input_data = np.expand_dims(
+                                np.array(img.resize((100, 100))) / 255.0, axis=0
+                            )
 
-                    img_input = preprocess(image)
-                    aug_input = preprocess(augmented)
-                    adj_input = preprocess(adjusted)
+                        probs = (
+                            model.predict_proba(input_data)
+                            if model_name == "RandomForest"
+                            else model.predict(input_data)
+                        )
+                        return int(np.argmax(probs, axis=1)[0])
 
-                    img_pred = model.predict(img_input)
-                    aug_pred = model.predict(aug_input)
-                    adj_pred = model.predict(adj_input)
-
-                    img_label = np.argmax(img_pred, axis=1)[0]
-                    aug_label = np.argmax(aug_pred, axis=1)[0]
-                    adj_label = np.argmax(adj_pred, axis=1)[0]
+                    img_label = predict_image(model, selected_model_name, image)
+                    aug_label = predict_image(model, selected_model_name, augmented)
+                    adj_label = predict_image(model, selected_model_name, adjusted)
 
                     index_to_label = {
                         0: "DCIS_1",
